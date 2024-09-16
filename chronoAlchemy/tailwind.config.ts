@@ -11,10 +11,16 @@ export default {
 			textShadow: {
 				'glow': '0 0 10px rgba(255, 255, 255, 0.8)',
 			},
+			fontFamily: {
+				PTSerif: ['PTSerif', 'PTSerif'],
+			},
+			fontSize:{
+				
+			},
+			backdropBlur: {
+				'xs': '2px',
+			},
 		},
-		fontFamily: {
-
-		}
 	},
 
 	mode: 'jit', // just-in-time mod, rychlejší vykreslování CSS
