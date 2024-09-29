@@ -4,48 +4,70 @@
 	import { goto } from '$app/navigation';
 	import Particles from '$lib/components/particles.svelte';
 
-let email = '';
-let password = '';
-let error = '';
+	let email = '';
+	let password = '';
+	let error = '';
+	let loading = false;
 
-async function handleSubmit() {
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+	async function handleSubmit() {
+		loading = true;
+		error = '';
 
-  if (signUpError) {
-    error = signUpError.message;
-  } else {
-    goto('/login');
-  }
-}
+		const { data, error: signUpError } = await supabase.auth.signUp({
+			email,
+			password
+		});
+
+		if (signUpError) {
+			error = signUpError.message;
+		} else if (data?.user) {
+			// Úspěšná registrace
+			alert('Registrace úspěšná! Prosím, zkontrolujte svůj email pro potvrzení účtu.');
+			goto('/login');
+		} else {
+			error = 'Nastala neočekávaná chyba při registraci.';
+		}
+
+		loading = false;
+	}
 </script>
 
 <Particles />
 
-<div class="container mx-auto p-4 text-white items-center justify-center flex my-5 pt-10">
+<div class="container mx-auto my-5 flex items-center justify-center p-4 pt-10 text-white">
 	<form on:submit|preventDefault={handleSubmit}>
 		<div class="pb-6">
-		  <label for="email" class="font-PTSerif text-xl pr-4">Email:</label>
-		  <input type="email" id="email" bind:value={email} required class="bg-white bg-opacity-40 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus: ring bg-gray-800"/>
+			<label for="email" class="font-PTSerif pr-4 text-xl">Email:</label>
+			<input
+				type="email"
+				id="email"
+				bind:value={email}
+				required
+				class="bg-opacity-40 border focus:outline-none focus:ring-2 focus:ring rounded-lg bg-gray-800 bg-white p-2 shadow-md"
+			/>
 		</div>
 		<div>
-		  <label for="password" class="font-PTSerif text-xl pr-4">Heslo:</label>
-		  <input type="password" id="password" bind:value={password} required class="bg-white bg-opacity-40 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus: ring bg-gray-800"/>
+			<label for="password" class="font-PTSerif pr-4 text-xl">Heslo:</label>
+			<input
+				type="password"
+				id="password"
+				bind:value={password}
+				required
+				class="bg-opacity-40 border focus:outline-none focus:ring-2 focus:ring rounded-lg bg-gray-800 bg-white p-2 shadow-md"
+			/>
 		</div>
-		<button type="submit" class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-16 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl"
-		on:click={() => navigateWithTransition('#', 'slide-left')}
+		<button
+			type="submit"
+			class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-16 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl"
+			disabled={loading}
 		>
-	Registrovat
-</button>
-	  </form>
-	  
-	  {#if error}
-		<p class="error">{error}</p>
-	  {/if}
+			{loading ? 'Registruji...' : 'Registrovat'}
+		</button>
+	</form>
 
-
+	{#if error}
+		<p class="error mt-4 text-red-500">{error}</p>
+	{/if}
 
 	<button
 		class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-16 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl"
