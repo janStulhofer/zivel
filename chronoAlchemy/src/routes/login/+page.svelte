@@ -26,7 +26,7 @@
             password,
           });
           if (signInError) throw signInError;
-          goto('/dashboard'); // Přesměrování na dashboard po úspěšném přihlášení
+          goto('/game'); // Přesměrování do herního panelu
         }
       } catch (err) {
         error = err.message;
