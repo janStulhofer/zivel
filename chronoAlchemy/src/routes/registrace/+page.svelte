@@ -3,6 +3,7 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { goto } from '$app/navigation';
 	import Particles from '$lib/components/particles.svelte';
+	import Header from '$lib/components/Header.svelte';
 	import { X } from 'lucide-svelte';
   
 	let email = '';
