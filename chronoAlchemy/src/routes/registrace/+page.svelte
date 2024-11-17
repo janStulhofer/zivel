@@ -79,7 +79,7 @@
 	  </button>
 	  <form on:submit|preventDefault={handleSubmit} class="space-y-4">
 		<div>
-		  <label for="username" class="font-PTSerif text-xl block mb-2 text-white">Uživatelské jméno:</label>
+		  <label for="username" class="font-Rubik text-xl block mb-2 text-white">Uživatelské jméno:</label>
 		  <input
 			type="text"
 			id="username"
@@ -89,7 +89,7 @@
 		  />
 		</div>
 		<div>
-		  <label for="email" class="font-PTSerif text-xl block mb-2 text-white">Email:</label>
+		  <label for="email" class="font-Rubik text-xl block mb-2 text-white">Email:</label>
 		  <input
 			type="email"
 			id="email"
@@ -99,7 +99,7 @@
 		  />
 		</div>
 		<div>
-		  <label for="password" class="font-PTSerif text-xl block mb-2 text-white">Heslo:</label>
+		  <label for="password" class="font-Rubik text-xl block mb-2 text-white">Heslo:</label>
 		  <input
 			type="password"
 			id="password"
@@ -110,7 +110,7 @@
 		</div>
 		<button
 		  type="submit"
-		  class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-8 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl w-full"
+		  class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-Rubik mt-8 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl w-full"
 		  disabled={loading}
 		>
 		  {loading ? 'Registruji...' : 'Registrovat'}
