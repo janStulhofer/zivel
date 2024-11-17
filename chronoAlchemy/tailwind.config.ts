@@ -15,6 +15,7 @@ export default {
 				'3xl':'0 3px 50px 5px rgb(0 0 0 / 0.25)',
 			},
 			fontFamily: {
+				Rubik: ['Rubik', 'Rubik'],
 				PTSerif: ['PTSerif', 'PTSerif'],
 			},
 			fontSize:{
