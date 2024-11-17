@@ -26,7 +26,7 @@
             password,
           });
           if (signInError) throw signInError;
-          goto('/dashboard'); // Přesměrování na dashboard po úspěšném přihlášení
+          goto('/game'); // Přesměrování do herního panelu
         }
       } catch (err) {
         error = err.message;
@@ -53,7 +53,7 @@
       </button>
       <form on:submit|preventDefault={handleSubmit} class="space-y-4">
         <div>
-          <label for="email" class="font-PTSerif text-xl block mb-2 text-white">Email:</label>
+          <label for="email" class="font-Rubik text-xl block mb-2 text-white">Email:</label>
           <input
             type="email"
             id="email"
@@ -64,7 +64,7 @@
         </div>
         {#if !resetPasswordMode}
           <div>
-            <label for="password" class="font-PTSerif text-xl block mb-2 text-white">Heslo:</label>
+            <label for="password" class="font-Rubik text-xl block mb-2 text-white">Heslo:</label>
             <input
               type="password"
               id="password"
@@ -76,7 +76,7 @@
         {/if}
         <button
           type="submit"
-          class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-8 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl w-full"
+          class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-Rubik mt-8 rounded-2xl border-white px-3 py-1 text-xl font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-2xl w-full"
           disabled={loading}
         >
           {#if resetPasswordMode}
@@ -92,7 +92,7 @@
       {/if}
   
       <button
-        class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-PTSerif mt-8 rounded-2xl border-white px-3 py-1 text-lg font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-xl w-full"
+        class="text-shadow-glow border bg-slate-950 transition hover:shadow-3xl hover:invert font-Rubik mt-8 rounded-2xl border-white px-3 py-1 text-lg font-bold text-white duration-300 ease-in-out lg:px-4 lg:py-2 lg:text-xl w-full"
         on:click={toggleResetPassword}
       >
         {resetPasswordMode ? 'Zpět na přihlášení' : 'Zapomenuté heslo'}

@@ -3,8 +3,8 @@
 @import 'tailwindcss/utilities';
 
 @font-face {
-	font-family: 'PTSerif';
-	src: url(/chronoAlchemy/static/fonts/PTSerif-Regular.ttf) format('truetype');
+	font-family: 'Rubik';
+	src: url('/fonts/Rubik-Regular.ttf') format('truetype');
 	font-weight: 400;
 	font-style: normal;
 }
