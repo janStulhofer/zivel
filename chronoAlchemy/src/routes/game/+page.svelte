@@ -4,7 +4,6 @@
   import { navigateWithTransition } from '$lib/transitions';
   import { fade, fly } from 'svelte/transition';
   import Particles from '$lib/components/particles.svelte';
-  import HeaderInGame from '$lib/components/HeaderInGame.svelte';
   
   const avatars = [
     '/assets/avatars/avatar.jpg',
