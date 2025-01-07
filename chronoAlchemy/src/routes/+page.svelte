@@ -12,7 +12,7 @@
 <div class="mt-[5px] flex items-center justify-center lg:mt-[100px]">
 	<div class=" backdrop-blur-xs my-auto text-center text-white">
 		<p class="text-shadow-glow my-10 text-xl lg:text-2xl font-Rubik">
-			Chrono Alchemy je webová videohra, zaměřená na kombinaci živlů, nebo ostatních různých prvků.
+			Živel je webová videohra, zaměřená na kombinaci živlů, nebo ostatních různých prvků.
 		</p>
 		<p class="text-shadow-glow font-Rubik mx-auto w-[300px] text-xl lg:w-[600px]">
 			Hru provází příběh, začnete na samotném počátku času, kde budete muset tvořit základní

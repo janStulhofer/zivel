@@ -1,2 +1,2 @@
-# chronoAlchemy
+# Webová hra Živel
 Ročníkový projekt
