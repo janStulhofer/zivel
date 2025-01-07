@@ -6,7 +6,6 @@
   import { dndzone } from 'svelte-dnd-action';
   import Particles from '$lib/components/particles.svelte';
   import LiquidProgressBar from '$lib/components/LiquidProgressBar.svelte';
-  import HeaderInGame from '$lib/components/HeaderInGame.svelte';
   
   //Seznam cest k avatarum
   const avatars = [
