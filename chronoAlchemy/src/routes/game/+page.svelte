@@ -6,6 +6,7 @@
   import { dndzone } from 'svelte-dnd-action';
   import Particles from '$lib/components/particles.svelte';
   import LiquidProgressBar from '$lib/components/LiquidProgressBar.svelte';
+  import { elements, dragElement } from '$lib/dragLogic';
   
   //Seznam cest k avatarum
   const avatars = [
@@ -25,14 +26,16 @@
   let currentAvatarId = 0;
   let showAvatarSelection = false;
   let dataLoaded = false;
-  
+
   let prvkyPocet = 8;
-  
+
+  $: gameElements = $elements;
+
   onMount(async () => {
-    const { data: { user } } = await supabase.auth.getUser(); //Ziskani uzivatele
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       username = user.user_metadata.username || 'Uživatel';
-      const { data, error } = await supabase //Nacteni uzivatelskych dat
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('tutorial, avatar_id')
         .eq('id', user.id)
@@ -48,6 +51,13 @@
     }
     loading = false;
     dataLoaded = true;
+
+    // Inicializace herních prvků
+    elements.set([
+      { id: 1, type: 'water', x: 100, y: 100, width: 50, height: 50 },
+      { id: 2, type: 'fire', x: 200, y: 200, width: 50, height: 50 },
+      // Přidejte další počáteční prvky podle potřeby
+    ]);
   });
   
   //Funkce pro odhlaseni uzivatele
@@ -75,7 +85,6 @@
     }
   }
   
-
   //Reakce na stisk klavesy pri vyberu uzivatele
   function handleKeyDown(event: KeyboardEvent, avatarId: number) {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -113,24 +122,36 @@
       <div class="flex items-center space-x-4">
         <span class="text-white font-medium">{username}</span>
         <img 
-          src={avatars[currentAvatarId]} 
-          alt="User avatar" 
-          class="w-10 h-10 rounded-full object-cover"
-        />
-      </div>
+        src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
+        alt="User avatar" 
+        class="w-10 h-10 rounded-full object-cover"
+      />
     </div>
+  </div>
 
     <!-- HERNÍ PROSTOR -->
     <div class="flex-1 flex overflow-hidden">
       <!-- Levý prostor - přidat obsah jako příběh, achievementy etc. nebo přidat pod menu v profilu -->
       <div class="w-16"></div>
 
-      <!-- Hlavní herní plocha -->
-      <div class="flex-1 p-4">
-        <div class="w-full h-full bg-black/10 backdrop-blur-sm rounded-xl p-6">
-
-        </div>
+    <!-- Hlavní herní plocha -->
+    <div class="flex-1 p-4">
+      <div class="w-full h-full bg-black/10 backdrop-blur-sm rounded-xl p-6 relative">
+        {#each gameElements as element (element.id)}
+          <div
+            class="absolute cursor-move"
+            style="left: {element.x}px; top: {element.y}px; width: {element.width}px; height: {element.height}px;"
+            data-id={element.id}
+            use:dragElement
+          >
+            <!-- Přidat obrázky pro jednotlivé prvky -->
+            <div class="w-full h-full bg-blue-500 rounded-md flex items-center justify-center text-white">
+              {element.type}
+            </div>
+          </div>
+        {/each}
       </div>
+    </div>
 
       <!-- Pravý panel s prvky -->
       <div class="w-80">
@@ -153,7 +174,6 @@
   </div>
 {/if}
 
-      <!-- "tutorial" vyber avatara -->
 {#if showAvatarSelection && dataLoaded}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center">
     <div class="bg-black/80 backdrop-blur-md p-8 rounded-xl max-w-2xl w-full">
@@ -168,13 +188,13 @@
             tabindex="0"
           >
             <img
-              src={avatar}
-              alt="Avatar option {i + 1}"
-              class="w-full h-full object-cover"
-            />
-          </div>
-        {/each}
-      </div>
+            src={`/assets/avatars/avatar${i + 1}.jpg`}
+            alt="Avatar option {i + 1}"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      {/each}
     </div>
   </div>
+</div>
 {/if}
