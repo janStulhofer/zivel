@@ -7,7 +7,9 @@
   import Particles from '$lib/components/particles.svelte';
   import LiquidProgressBar from '$lib/components/LiquidProgressBar.svelte';
   import { elements, dragElement } from '$lib/dragLogic';
-  
+  import { unlockedElements } from '$lib/stores/odemcenePrvky';
+  import ElementPanel from '$lib/components/ElementPanel.svelte';
+
   //Seznam cest k avatarum
   const avatars = [
     '/assets/avatars/avatar.jpg',
@@ -31,13 +33,15 @@
 
   $: gameElements = $elements;
 
+  const default_elements = ['water', 'air', 'fire', 'earth'];
+
   onMount(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       username = user.user_metadata.username || 'Uživatel';
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('tutorial, avatar_id')
+        .select('tutorial, avatar_id, unlocked_elements')
         .eq('id', user.id)
         .single();
       
@@ -45,7 +49,21 @@
         tutorialCompleted = data.tutorial;
         currentAvatarId = data.avatar_id;
         showAvatarSelection = !data.tutorial;
+        if (!data.tutorial && (!data.unlocked_elements || data.unlocked_elements.length === 0)) {
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ unlocked_elements: default_elements })
+          .eq('id', user.id);
+        
+        if (!updateError) {
+          unlockedElements.set(default_elements);
+        } else {
+          console.error('Error initializing elements:', updateError);
+        }
+      } else {
+        unlockedElements.set(data.unlocked_elements || default_elements);
       }
+    }
     } else {
       navigateWithTransition('/login', 'slide-right');
     }
@@ -56,10 +74,10 @@
     elements.set([
       { id: 1, type: 'water', x: 100, y: 100, width: 50, height: 50 },
       { id: 2, type: 'fire', x: 200, y: 200, width: 50, height: 50 },
-      // Přidejte další počáteční prvky podle potřeby
     ]);
-  });
-  
+  }
+  );
+
   //Funkce pro odhlaseni uzivatele
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -96,6 +114,46 @@
   const generateGridItems = (count: number) => {
     return Array.from({ length: count }, (_, i) => i + 1);
   };
+
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
+    const elementType = event.dataTransfer?.getData('text/plain');
+    
+    if (elementType) {
+      const gameArea = event.currentTarget as HTMLElement;
+      const rect = gameArea.getBoundingClientRect();
+      const x = event.clientX - rect.left - 25; // 25 je polovina šířky elementu
+      const y = event.clientY - rect.top - 25; // 25 je polovina výšky elementu
+
+      elements.update(els => [...els, {
+        id: Date.now(),
+        type: elementType,
+        x,
+        y,
+        width: 50,
+        height: 50
+      }]);
+    }
+  }
+
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  function getElementImage(type: string): string | undefined {
+    const elementImages: { [key: string]: string } = {
+      air: '/assets/prvky/air.png',
+      earth: '/assets/prvky/earth.png',
+      fire: '/assets/prvky/fire.png',
+      steam: '/assets/prvky/steam.png',
+      mud: '/assets/prvky/mud.png',
+      water: '/assets/prvky/water.png'
+    };
+    return elementImages[type];
+  }
 </script>
 
 <Particles />
@@ -122,53 +180,55 @@
       <div class="flex items-center space-x-4">
         <span class="text-white font-medium">{username}</span>
         <img 
-        src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
-        alt="User avatar" 
-        class="w-10 h-10 rounded-full object-cover"
-      />
+          src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
+          alt="User avatar" 
+          class="w-10 h-10 rounded-full object-cover"
+        />
+      </div>
     </div>
-  </div>
 
     <!-- HERNÍ PROSTOR -->
     <div class="flex-1 flex overflow-hidden">
       <!-- Levý prostor - přidat obsah jako příběh, achievementy etc. nebo přidat pod menu v profilu -->
       <div class="w-16"></div>
 
-    <!-- Hlavní herní plocha -->
-    <div class="flex-1 p-4">
-      <div class="w-full h-full bg-black/10 backdrop-blur-sm rounded-xl p-6 relative">
-        {#each gameElements as element (element.id)}
-          <div
-            class="absolute cursor-move"
-            style="left: {element.x}px; top: {element.y}px; width: {element.width}px; height: {element.height}px;"
-            data-id={element.id}
-            use:dragElement
-          >
-            <!-- Přidat obrázky pro jednotlivé prvky -->
-            <div class="w-full h-full bg-blue-500 rounded-md flex items-center justify-center text-white">
-              {element.type}
+      <!-- Hlavní herní plocha -->
+      <div class="flex-1 p-4">
+        <div 
+          class="w-full h-full bg-black/10 backdrop-blur-sm rounded-xl p-6 relative"
+          on:drop={handleDrop}
+          on:dragover={handleDragOver}
+          role="region"
+          aria-label="Herní plocha pro kombinování prvků"
+        >
+          {#each gameElements as element (element.id)}
+            <div
+              class="absolute cursor-grab active:cursor-grabbing [&:active>img]:opacity-50 select-none"
+              style="left: {element.x}px; top: {element.y}px; width: {element.width}px; height: {element.height}px;"
+              data-id={element.id}
+              use:dragElement
+            >
+              {#if getElementImage(element.type)}
+                <img 
+                  src={getElementImage(element.type) || "/placeholder.svg"} 
+                  alt={element.type}
+                  class="w-full h-full rounded-md object-contain select-none pointer-events-none transition-opacity"
+                  draggable="false"
+                  style="-webkit-user-drag: none;"
+                />
+              {:else}
+                <div class="w-full h-full bg-blue-500 rounded-md flex items-center justify-center text-white select-none">
+                  {element.type}
+                </div>
+              {/if}
             </div>
-          </div>
-        {/each}
+          {/each}
+        </div>
       </div>
-    </div>
 
       <!-- Pravý panel s prvky -->
       <div class="w-80">
-        <div class="h-full bg-black/[0.01] backdrop-blur-sm rounded-xl">
-          <div class="h-full overflow-y-auto scrollbar-hide p-4">
-            <div class="flex flex-col space-y-2">
-              {#each generateGridItems(prvkyPocet) as prvek}
-                <div 
-                  class="flex items-center bg-white/10 rounded-lg cursor-pointer hover:bg-white/20 transition-all duration-300 p-2"
-                >
-                  <div class="w-12 h-12 bg-gray-300 rounded-lg mr-4"></div>
-                  <span class="text-white">{prvek}</span>
-                </div>
-              {/each}
-            </div>
-          </div>
-        </div>
+        <ElementPanel />
       </div>
     </div>
   </div>
