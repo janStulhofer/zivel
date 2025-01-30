@@ -3,6 +3,7 @@ import { seznamKombinaci } from './seznamKombinaci';
 import { seznamPrvku } from './seznamPrvku';
 import { supabase } from './supabaseClient';
 import { unlockedElements } from './stores/odemcenePrvky';
+import { xpStore } from './stores/xpCount';
 
 interface GameElement {
   id: number;
@@ -20,31 +21,32 @@ async function updateUnlockedElements(newElement: string) {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-      const { data: currentData, error: fetchError } = await supabase
+      const { data: data, error: fetchError } = await supabase
         .from('user_profiles')
-        .select('unlocked_elements')
+        .select('unlocked_elements, xp')
         .eq('id', user.id)
         .single();
-      
       if (fetchError) {
         console.error('Error fetching current elements:', fetchError);
         return;
       }
 
-      const currentElements = Array.isArray(currentData?.unlocked_elements) 
-        ? currentData.unlocked_elements 
+      const currentElements = Array.isArray(data?.unlocked_elements) 
+        ? data.unlocked_elements 
         : [];
 
       if (!currentElements.includes(newElement)) {
         const updatedElements = [...currentElements, newElement];
+        const newXp = (data.xp || 0) + 100;
         
         const { error: updateError } = await supabase
           .from('user_profiles')
-          .update({ unlocked_elements: updatedElements })
+          .update({ unlocked_elements: updatedElements, xp: newXp})
           .eq('id', user.id);
           
         if (!updateError) {
           unlockedElements.set(updatedElements);
+          xpStore.set(newXp);
           console.log('Successfully updated elements:', updatedElements);
         } else {
           console.error('Error updating unlocked elements:', updateError);
