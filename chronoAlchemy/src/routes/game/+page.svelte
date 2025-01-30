@@ -8,6 +8,8 @@
   import LiquidProgressBar from '$lib/components/LiquidProgressBar.svelte';
   import { elements, dragElement } from '$lib/dragLogic';
   import { unlockedElements } from '$lib/stores/odemcenePrvky';
+  import {xpStore} from '$lib/stores/xpCount';
+  import {tokenStore} from '$lib/stores/tokenCount';
   import ElementPanel from '$lib/components/ElementPanel.svelte';
 
   //Seznam cest k avatarum
@@ -41,12 +43,14 @@
       username = user.user_metadata.username || 'Uživatel';
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('tutorial, avatar_id, unlocked_elements')
+        .select('tutorial, avatar_id, unlocked_elements, token, xp')
         .eq('id', user.id)
         .single();
       
       if (data) {
         tutorialCompleted = data.tutorial;
+        xpStore.set(data.xp);
+        tokenStore.set(data.token);
         currentAvatarId = data.avatar_id;
         showAvatarSelection = !data.tutorial;
         if (!data.tutorial && (!data.unlocked_elements || data.unlocked_elements.length === 0)) {
@@ -173,11 +177,12 @@
       
       <!-- Progress bar uprostřed -->
       <div class="flex-1 max-w-xl mx-8">
-        <LiquidProgressBar />
+        <LiquidProgressBar xp = {$xpStore}/>
       </div>
       
       <!-- Profil vpravo -->
       <div class="flex items-center space-x-4">
+        <span class="text-white border rounded-lg mr-6 p-1 flex"><img src="/assets/gui/token.png" class="w-7 pr-2">{$tokenStore}</span>
         <span class="text-white font-medium">{username}</span>
         <img 
           src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
@@ -257,4 +262,5 @@
     </div>
   </div>
 </div>
+
 {/if}
