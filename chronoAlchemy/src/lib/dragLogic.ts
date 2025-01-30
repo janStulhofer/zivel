@@ -1,4 +1,9 @@
 import { writable } from 'svelte/store';
+import { seznamKombinaci } from './seznamKombinaci';
+import { seznamPrvku } from './seznamPrvku';
+import { supabase } from './supabaseClient';
+import { unlockedElements } from './stores/odemcenePrvky';
+import { xpStore } from './stores/xpCount';
 
 interface GameElement {
   id: number;
@@ -11,6 +16,48 @@ interface GameElement {
 
 export const elements = writable<GameElement[]>([]);
 
+async function updateUnlockedElements(newElement: string) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      const { data: data, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('unlocked_elements, xp')
+        .eq('id', user.id)
+        .single();
+      if (fetchError) {
+        console.error('Error fetching current elements:', fetchError);
+        return;
+      }
+
+      const currentElements = Array.isArray(data?.unlocked_elements) 
+        ? data.unlocked_elements 
+        : [];
+
+      if (!currentElements.includes(newElement)) {
+        const updatedElements = [...currentElements, newElement];
+        const newXp = (data.xp || 0) + 100;
+        
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ unlocked_elements: updatedElements, xp: newXp})
+          .eq('id', user.id);
+          
+        if (!updateError) {
+          unlockedElements.set(updatedElements);
+          xpStore.set(newXp);
+          console.log('Successfully updated elements:', updatedElements);
+        } else {
+          console.error('Error updating unlocked elements:', updateError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in updateUnlockedElements:', error);
+  }
+}
+
 //Kontrola kolize
 function checkCollision(element1: GameElement, element2: GameElement): boolean {
   return (
@@ -21,13 +68,15 @@ function checkCollision(element1: GameElement, element2: GameElement): boolean {
   );
 }
 
+//Generování klíče podle kterého se bude následně porcházet pole kombinací
+function generateKey(type1: string, type2: string): string {
+  return [type1, type2].sort().join('_');
+}
+
 //Kombinace
 function getCombination(type1: string, type2: string): string | null {
-  //Zkouska prvku
-  if (type1 === 'water' && type2 === 'fire' || type1 === 'fire' && type2 === 'water') {
-    return 'steam';
-  }
-  return null;
+  const key = generateKey(type1, type2);
+  return seznamKombinaci.get(key) || null;
 }
 
 export function dragElement(node: HTMLElement) {
@@ -87,6 +136,8 @@ export function dragElement(node: HTMLElement) {
                   width: 50,
                   height: 50
                 };
+
+                updateUnlockedElements(combination);
 
                 els = els.filter(e => e.id !== movedElement.id && e.id !== target.id);
                 els.push(newElement);
