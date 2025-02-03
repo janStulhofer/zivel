@@ -11,7 +11,9 @@
   import {xpStore} from '$lib/stores/xpCount';
   import {tokenStore} from '$lib/stores/tokenCount';
   import ElementPanel from '$lib/components/ElementPanel.svelte';
-
+import CurrentTask from '$lib/components/CurrentTask.svelte';
+import TaskPanel from '$lib/components/TaskPanel.svelte';
+import { TASKS } from '$lib/tasks';
   //Seznam cest k avatarum
   const avatars = [
     '/assets/avatars/avatar.jpg',
@@ -30,6 +32,7 @@
   let currentAvatarId = 0;
   let showAvatarSelection = false;
   let dataLoaded = false;
+  let isMenuOpen = false;
 
   let prvkyPocet = 8;
 
@@ -158,6 +161,11 @@
     };
     return elementImages[type];
   }
+
+  function toggleMenu() {
+    isMenuOpen = !isMenuOpen;
+  }
+
 </script>
 
 <Particles />
@@ -195,7 +203,78 @@
     <!-- HERNÍ PROSTOR -->
     <div class="flex-1 flex overflow-hidden">
       <!-- Levý prostor - přidat obsah jako příběh, achievementy etc. nebo přidat pod menu v profilu -->
-      <div class="w-16"></div>
+      <div class="w-32 border-r border-gray-700">
+        <!-- Hamburger ikona -->
+        <button
+          on:click={toggleMenu}
+          class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+          aria-label="Otevřít menu"
+        >
+          <img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14"/>
+        </button>
+
+        <button
+        on:click={toggleMenu}
+        class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+        aria-label="Otevřít menu"
+      >
+        <img src="/assets/gui/shopping-cart.png" alt="Úkoly" class="w-14"/>
+      </button>
+
+      <button
+      on:click={toggleMenu}
+      class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+      aria-label="Otevřít menu"
+    >
+      <img src="/assets/gui/achievement.png" alt="Úkoly" class="w-14"/>
+    </button>
+
+    <button
+    on:click={toggleMenu}
+    class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+    aria-label="Otevřít menu"
+  >
+    <img src="/assets/gui/podium.png" alt="Úkoly" class="w-14"/>
+  </button>
+
+  <button
+  on:click={toggleMenu}
+  class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+  aria-label="Otevřít menu"
+>
+  <img src="/assets/gui/book-cover.png" alt="Úkoly" class="w-14"/>
+</button>
+
+<button
+on:click={toggleMenu}
+class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+aria-label="Otevřít menu"
+>
+<img src="/assets/gui/stopwatch.png" alt="Úkoly" class="w-14"/>
+</button>
+      
+        <!-- Rolovací menu -->
+        <div
+          class="fixed top-0 left-1 h-screen bg-gray-800/90 backdrop-blur-sm border-r border-gray-700 w-100 transition-transform duration-300 ease-in-out z-10 overflow-y-auto scrollbar-hide"
+          class:translate-x-0={isMenuOpen}
+          class:-translate-x-full={!isMenuOpen}
+        >
+          <div class="p-4">
+            <h2 class="text-xl font-bold text-white mb-4">Úkoly</h2>
+
+            <button
+            on:click={toggleMenu}
+            class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+            aria-label="Otevřít menu"
+          >
+            <img src="/assets/gui/cancel.png" alt="Úkoly" class="w-14"/>
+          </button>
+
+            <TaskPanel />
+            <!-- Zde můžete přidat další sekce, např. Úspěchy, Obchod -->
+          </div>
+        </div>
+      </div>
 
       <!-- Hlavní herní plocha -->
       <div class="flex-1 p-4">
@@ -229,6 +308,8 @@
             </div>
           {/each}
         </div>
+        <CurrentTask tasks={TASKS} />
+
       </div>
 
       <!-- Pravý panel s prvky -->
