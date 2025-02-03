@@ -11,9 +11,7 @@
 	import { xpStore } from '$lib/stores/xpCount';
 	import { tokenStore } from '$lib/stores/tokenCount';
 	import ElementPanel from '$lib/components/ElementPanel.svelte';
-	import CurrentTask from '$lib/components/CurrentTask.svelte';
 	import TaskPanel from '$lib/components/TaskPanel.svelte';
-	import { TASKS } from '$lib/tasks';
 	//Seznam cest k avatarum
 	const avatars = [
 		'/assets/avatars/avatar.jpg',
@@ -317,7 +315,7 @@
 						</div>
 					{/each}
 				</div>
-				<CurrentTask tasks={TASKS} />
+				
 			</div>
 
 			<!-- Pravý panel s prvky -->
