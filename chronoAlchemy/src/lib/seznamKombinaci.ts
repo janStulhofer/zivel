@@ -8,6 +8,7 @@ export const seznamKombinaci: Map<string, string> = new Map([
     ["swampEar_water", "watco"],
     ["fire_watco", "stem"],
     ["fire_stem", "stemfir"],
-    ["mud_stem", "xd"]
+    ["mud_stem", "xd"],
+    ["air_fire", "ohnivyVzduch"],
   ]);
   
