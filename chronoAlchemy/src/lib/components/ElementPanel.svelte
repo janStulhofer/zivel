@@ -2,15 +2,6 @@
     import { unlockedElements } from '$lib/stores/odemcenePrvky';
     import { elements } from '$lib/dragLogic';
   
-    const elementImages: { [key: string]: string } = {
-      air: '/assets/prvky/air.png',
-      earth: '/assets/prvky/earth.png',
-      fire: '/assets/prvky/fire.png',
-      steam: '/assets/prvky/steam.png',
-      mud: '/assets/prvky/mud.png',
-      water: '/assets/prvky/water.png'
-    };
-  
     const elementNames: { [key: string]: string } = {
       air: 'Vzduch',
       earth: 'Země',
@@ -20,9 +11,9 @@
       water: 'Voda'
     };
   
-    function getElementImage(type: string): string | undefined {
-      return elementImages[type];
-    }
+    function getElementImage(elementName) {
+    return `/assets/prvky/${elementName.toLowerCase()}.png`;
+}
   
     function handleDragStart(event: DragEvent, elementType: string) {
       if (event.dataTransfer) {
