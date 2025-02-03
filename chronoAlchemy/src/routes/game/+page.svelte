@@ -8,8 +8,8 @@
   import LiquidProgressBar from '$lib/components/LiquidProgressBar.svelte';
   import { elements, dragElement } from '$lib/dragLogic';
   import { unlockedElements } from '$lib/stores/odemcenePrvky';
-  import {xpStore} from '$lib/stores/xpCount';
-  import {tokenStore} from '$lib/stores/tokenCount';
+	import { xpStore } from '$lib/stores/xpCount';
+	import { tokenStore } from '$lib/stores/tokenCount';
   import ElementPanel from '$lib/components/ElementPanel.svelte';
 import CurrentTask from '$lib/components/CurrentTask.svelte';
 import TaskPanel from '$lib/components/TaskPanel.svelte';
@@ -41,7 +41,9 @@ import { TASKS } from '$lib/tasks';
   const default_elements = ['water', 'air', 'fire', 'earth'];
 
   onMount(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
     if (user) {
       username = user.user_metadata.username || 'Uživatel';
       const { data, error } = await supabase
@@ -80,10 +82,9 @@ import { TASKS } from '$lib/tasks';
     // Inicializace herních prvků
     elements.set([
       { id: 1, type: 'water', x: 100, y: 100, width: 50, height: 50 },
-      { id: 2, type: 'fire', x: 200, y: 200, width: 50, height: 50 },
+			{ id: 2, type: 'fire', x: 200, y: 200, width: 50, height: 50 }
     ]);
-  }
-  );
+	});
 
   //Funkce pro odhlaseni uzivatele
   async function handleLogout() {
@@ -93,7 +94,9 @@ import { TASKS } from '$lib/tasks';
   
   //Aktualizace avatara uzivatele
   async function updateAvatar(newAvatarId: number) {
-    const { data: { user } } = await supabase.auth.getUser();
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
     if (user) {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -132,14 +135,17 @@ import { TASKS } from '$lib/tasks';
       const x = event.clientX - rect.left - 25; // 25 je polovina šířky elementu
       const y = event.clientY - rect.top - 25; // 25 je polovina výšky elementu
 
-      elements.update(els => [...els, {
+			elements.update((els) => [
+				...els,
+				{
         id: Date.now(),
         type: elementType,
         x,
         y,
         width: 50,
         height: 50
-      }]);
+				}
+			]);
     }
   }
 
@@ -165,113 +171,114 @@ import { TASKS } from '$lib/tasks';
   function toggleMenu() {
     isMenuOpen = !isMenuOpen;
   }
-
 </script>
 
 <Particles />
 
 {#if loading}
-  <div class="flex items-center justify-center h-screen">
+	<div class="flex h-screen items-center justify-center">
     <p class="text-2xl font-bold text-white">Načítání...</p>
-    <img src="/assets/loading2.gif" alt="nacitani">
+		<img src="/assets/loading2.gif" alt="nacitani" />
   </div>
 {:else if dataLoaded}
   <!-- Hlavní container -->
-  <div class="h-screen w-screen flex flex-col overflow-hidden">
+	<div class="flex h-screen w-screen flex-col overflow-hidden">
     <!-- Horní menu -->
-    <div class="w-full h-16 bg-black/[0.01] backdrop-blur-sm px-4 flex items-center justify-between">
+		<div
+			class="backdrop-blur-sm flex h-16 w-full items-center justify-between bg-black/[0.01] px-4"
+		>
       <!-- Logo vlevo -->
       <img src="/assets/logoZivel-White.png" alt="Logo" class="h-12 object-contain" />
       
       <!-- Progress bar uprostřed -->
-      <div class="flex-1 max-w-xl mx-8">
-        <LiquidProgressBar xp = {$xpStore}/>
+			<div class="mx-8 max-w-xl flex-1">
+				<LiquidProgressBar xp={$xpStore} />
       </div>
       
       <!-- Profil vpravo -->
       <div class="flex items-center space-x-4">
-        <span class="text-white border rounded-lg mr-6 p-1 flex"><img src="/assets/gui/token.png" class="w-7 pr-2">{$tokenStore}</span>
-        <span class="text-white font-medium">{username}</span>
+				<span class="border mr-6 flex rounded-lg p-1 text-white"
+					><img src="/assets/gui/token.png" class="w-7 pr-2" />{$tokenStore}</span
+				>
+				<span class="font-medium text-white">{username}</span>
         <img 
           src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
           alt="User avatar" 
-          class="w-10 h-10 rounded-full object-cover"
+					class="h-10 w-10 rounded-full object-cover"
         />
       </div>
     </div>
 
     <!-- HERNÍ PROSTOR -->
-    <div class="flex-1 flex overflow-hidden">
+		<div class="flex flex-1 overflow-hidden">
       <!-- Levý prostor - přidat obsah jako příběh, achievementy etc. nebo přidat pod menu v profilu -->
-      <div class="w-32 border-r border-gray-700">
-        <!-- Hamburger ikona -->
+			<div class="border-r w-32 border-gray-700">
         <button
           on:click={toggleMenu}
-          class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
           aria-label="Otevřít menu"
         >
-          <img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14" />
         </button>
 
         <button
         on:click={toggleMenu}
-        class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
         aria-label="Otevřít menu"
       >
-        <img src="/assets/gui/shopping-cart.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/shopping-cart.png" alt="Úkoly" class="w-14" />
       </button>
 
       <button
       on:click={toggleMenu}
-      class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
       aria-label="Otevřít menu"
     >
-      <img src="/assets/gui/achievement.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/achievement.png" alt="Úkoly" class="w-14" />
     </button>
 
     <button
     on:click={toggleMenu}
-    class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
     aria-label="Otevřít menu"
   >
-    <img src="/assets/gui/podium.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/podium.png" alt="Úkoly" class="w-14" />
   </button>
 
   <button
   on:click={toggleMenu}
-  class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
   aria-label="Otevřít menu"
 >
-  <img src="/assets/gui/book-cover.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/book-cover.png" alt="Úkoly" class="w-14" />
 </button>
 
 <button
 on:click={toggleMenu}
-class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
 aria-label="Otevřít menu"
 >
-<img src="/assets/gui/stopwatch.png" alt="Úkoly" class="w-14"/>
+					<img src="/assets/gui/stopwatch.png" alt="Úkoly" class="w-14" />
 </button>
       
         <!-- Rolovací menu -->
         <div
-          class="fixed top-0 left-1 h-screen bg-gray-800/90 backdrop-blur-sm border-r border-gray-700 w-100 transition-transform duration-300 ease-in-out z-10 overflow-y-auto scrollbar-hide"
+					class="left-1 bg-gray-800/90 backdrop-blur-sm border-r w-100 scrollbar-hide fixed top-0 z-10 h-screen overflow-y-auto border-gray-700 transition-transform duration-300 ease-in-out"
           class:translate-x-0={isMenuOpen}
           class:-translate-x-full={!isMenuOpen}
         >
           <div class="p-4">
-            <h2 class="text-xl font-bold text-white mb-4">Úkoly</h2>
+						<h2 class="mb-4 text-xl font-bold text-white">Úkoly</h2>
 
             <button
             on:click={toggleMenu}
-            class="p-4 hover:bg-gray-700/50 transition-colors w-full flex items-center justify-center"
+							class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
             aria-label="Otevřít menu"
           >
-            <img src="/assets/gui/cancel.png" alt="Úkoly" class="w-14"/>
+							<img src="/assets/gui/cancel.png" alt="Úkoly" class="w-14" />
           </button>
 
             <TaskPanel />
-            <!-- Zde můžete přidat další sekce, např. Úspěchy, Obchod -->
           </div>
         </div>
       </div>
@@ -279,7 +286,7 @@ aria-label="Otevřít menu"
       <!-- Hlavní herní plocha -->
       <div class="flex-1 p-4">
         <div 
-          class="w-full h-full bg-black/10 backdrop-blur-sm rounded-xl p-6 relative"
+					class="bg-black/10 backdrop-blur-sm relative h-full w-full rounded-xl p-6"
           on:drop={handleDrop}
           on:dragover={handleDragOver}
           role="region"
@@ -287,21 +294,23 @@ aria-label="Otevřít menu"
         >
           {#each gameElements as element (element.id)}
             <div
-              class="absolute cursor-grab active:cursor-grabbing [&:active>img]:opacity-50 select-none"
+							class="cursor-grab active:cursor-grabbing absolute select-none [&:active>img]:opacity-50"
               style="left: {element.x}px; top: {element.y}px; width: {element.width}px; height: {element.height}px;"
               data-id={element.id}
               use:dragElement
             >
               {#if getElementImage(element.type)}
                 <img 
-                  src={getElementImage(element.type) || "/placeholder.svg"} 
+									src={getElementImage(element.type) || '/placeholder.svg'}
                   alt={element.type}
-                  class="w-full h-full rounded-md object-contain select-none pointer-events-none transition-opacity"
+									class="pointer-events-none h-full w-full select-none rounded-md object-contain transition-opacity"
                   draggable="false"
                   style="-webkit-user-drag: none;"
                 />
               {:else}
-                <div class="w-full h-full bg-blue-500 rounded-md flex items-center justify-center text-white select-none">
+								<div
+									class="flex h-full w-full select-none items-center justify-center rounded-md bg-blue-500 text-white"
+								>
                   {element.type}
                 </div>
               {/if}
@@ -309,7 +318,6 @@ aria-label="Otevřít menu"
           {/each}
         </div>
         <CurrentTask tasks={TASKS} />
-
       </div>
 
       <!-- Pravý panel s prvky -->
@@ -321,13 +329,18 @@ aria-label="Otevřít menu"
 {/if}
 
 {#if showAvatarSelection && dataLoaded}
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center">
-    <div class="bg-black/80 backdrop-blur-md p-8 rounded-xl max-w-2xl w-full">
-      <p class="text-xl text-white mb-8 text-center">Začneme krátkým úvodem do hry, teď si vyberte svůj avatar!</p>
+	<div class="fixed inset-0 flex items-center justify-center bg-black/50">
+		<div class="bg-black/80 backdrop-blur-md w-full max-w-2xl rounded-xl p-8">
+			<p class="mb-8 text-center text-xl text-white">
+				Začneme krátkým úvodem do hry, teď si vyberte svůj avatar!
+			</p>
       <div class="grid grid-cols-4 grid-rows-2 gap-4">
         {#each avatars as avatar, i}
           <div
-            class="aspect-square rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-white transition-all {currentAvatarId === i ? 'ring-4 ring-slate-600' : ''}"
+						class="aspect-square hover:ring-2 hover:ring-white cursor-pointer overflow-hidden rounded-lg transition-all {currentAvatarId ===
+						i
+							? 'ring-4 ring-slate-600'
+							: ''}"
             on:click={() => updateAvatar(i)}
             on:keydown={(e) => handleKeyDown(e, i)}
             role="button"
@@ -336,12 +349,11 @@ aria-label="Otevřít menu"
             <img
             src={`/assets/avatars/avatar${i + 1}.jpg`}
             alt="Avatar option {i + 1}"
-            class="w-full h-full object-cover"
+							class="h-full w-full object-cover"
           />
         </div>
       {/each}
     </div>
   </div>
 </div>
-
 {/if}
