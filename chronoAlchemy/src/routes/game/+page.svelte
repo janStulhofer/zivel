@@ -12,6 +12,12 @@
 	import { tokenStore } from '$lib/stores/tokenCount';
 	import ElementPanel from '$lib/components/ElementPanel.svelte';
 	import TaskPanel from '$lib/components/TaskPanel.svelte';
+  import ShopPanel from '$lib/components/ShopPanel.svelte';
+  import AchievementsPanel from '$lib/components/AchievementsPanel.svelte';
+  import LeaderboardPanel from '$lib/components/LeaderboardPanel.svelte';
+  import StoryPanel from '$lib/components/StoryPanel.svelte';
+  import TimeModePanel from '$lib/components/TimeModePanel.svelte';
+  import StyledUsername from '$lib/components/StyledUsername.svelte';
 	//Seznam cest k avatarum
 	const avatars = [
 		'/assets/avatars/avatar.jpg',
@@ -31,6 +37,16 @@
 	let showAvatarSelection = false;
 	let dataLoaded = false;
 	let isMenuOpen = false;
+	let userId: string = '';
+  	let activePanel = null;
+
+function openPanel(panel) {
+    activePanel = panel;
+}
+
+function closePanel() {
+    activePanel = null;
+}
 
 	let prvkyPocet = 8;
 
@@ -43,6 +59,7 @@
 			data: { user }
 		} = await supabase.auth.getUser();
 		if (user) {
+			userId = user.id;
 			username = user.user_metadata.username || 'Uživatel';
 			const { data, error } = await supabase
 				.from('user_profiles')
@@ -76,12 +93,6 @@
 		}
 		loading = false;
 		dataLoaded = true;
-
-		// Inicializace herních prvků
-		elements.set([
-			{ id: 1, type: 'water', x: 100, y: 100, width: 50, height: 50 },
-			{ id: 2, type: 'fire', x: 200, y: 200, width: 50, height: 50 }
-		]);
 	});
 
 	//Funkce pro odhlaseni uzivatele
@@ -154,17 +165,9 @@
 		}
 	}
 
-	function getElementImage(type: string): string | undefined {
-		const elementImages: { [key: string]: string } = {
-			air: '/assets/prvky/air.png',
-			earth: '/assets/prvky/earth.png',
-			fire: '/assets/prvky/fire.png',
-			steam: '/assets/prvky/steam.png',
-			mud: '/assets/prvky/mud.png',
-			water: '/assets/prvky/water.png'
-		};
-		return elementImages[type];
-	}
+  function getElementImage(elementName) {
+    return `/assets/prvky/${elementName.toLowerCase()}.png`;
+}
 
 	function toggleMenu() {
 		isMenuOpen = !isMenuOpen;
@@ -198,8 +201,9 @@
 				<span class="border mr-6 flex rounded-lg p-1 text-white"
 					><img src="/assets/gui/token.png" class="w-7 pr-2" />{$tokenStore}</span
 				>
-				<span class="font-medium text-white">{username}</span>
-				<img
+				
+				<StyledUsername {username} {userId} />
+								<img
 					src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
 					alt="User avatar"
 					class="h-10 w-10 rounded-full object-cover"
@@ -209,77 +213,95 @@
 
 		<!-- HERNÍ PROSTOR -->
 		<div class="flex flex-1 overflow-hidden">
-			<!-- Levý prostor - přidat obsah jako příběh, achievementy etc. nebo přidat pod menu v profilu -->
+			<!-- Levý prostor -->
 			<div class="border-r w-32 border-gray-700">
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/shopping-cart.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/achievement.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/podium.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/book-cover.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<button
-					on:click={toggleMenu}
-					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-					aria-label="Otevřít menu"
-				>
-					<img src="/assets/gui/stopwatch.png" alt="Úkoly" class="w-14" />
-				</button>
-
-				<!-- Rolovací menu -->
-				<div
-					class="left-1 bg-gray-800/90 backdrop-blur-sm border-r w-100 scrollbar-hide fixed top-0 z-10 h-screen overflow-y-auto border-gray-700 transition-transform duration-300 ease-in-out"
-					class:translate-x-0={isMenuOpen}
-					class:-translate-x-full={!isMenuOpen}
-				>
-					<div class="p-4">
-						<h2 class="mb-4 text-xl font-bold text-white">Úkoly</h2>
-
-						<button
-							on:click={toggleMenu}
-							class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-							aria-label="Otevřít menu"
-						>
-							<img src="/assets/gui/cancel.png" alt="Úkoly" class="w-14" />
-						</button>
-
-						<TaskPanel />
-					</div>
-				</div>
-			</div>
+        <button
+            on:click={() => openPanel('tasks')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít úkoly"
+        >
+            <img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14" />
+        </button>
+    
+        <button
+            on:click={() => openPanel('shop')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít obchod"
+        >
+            <img src="/assets/gui/shopping-cart.png" alt="Obchod" class="w-14" />
+        </button>
+    
+        <button
+            on:click={() => openPanel('achievements')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít úspěchy"
+        >
+            <img src="/assets/gui/achievement.png" alt="Úspěchy" class="w-14" />
+        </button>
+    
+        <button
+            on:click={() => openPanel('leaderboard')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít žebříček"
+        >
+            <img src="/assets/gui/podium.png" alt="Žebříček" class="w-14" />
+        </button>
+    
+        <button
+            on:click={() => openPanel('story')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít příběh"
+        >
+            <img src="/assets/gui/book-cover.png" alt="Příběh" class="w-14" />
+        </button>
+    
+        <button
+            on:click={() => openPanel('timeMode')}
+            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+            aria-label="Otevřít časový režim"
+        >
+            <img src="/assets/gui/stopwatch.png" alt="Časový režim" class="w-14" />
+        </button>
+    
+        <!-- Rolovací menu -->
+        {#if activePanel !== null}
+            <div
+                class="left-1 bg-gray-800/90 backdrop-blur-sm border-r w-100 scrollbar-hide fixed top-0 z-10 h-screen overflow-y-auto border-gray-700 transition-transform duration-300 ease-in-out"
+                class:translate-x-0={activePanel !== null}
+                class:-translate-x-full={activePanel === null}
+            >
+                <div class="p-4">
+                    <button
+                        on:click={closePanel}
+                        class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+                        aria-label="Zavřít panel"
+                    >
+                        <img src="/assets/gui/cancel.png" alt="Vrátit" class="w-14" />
+                    </button>
+    
+                    {#if activePanel === 'tasks'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Úkoly</h2>
+                        <TaskPanel />
+                    {:else if activePanel === 'shop'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Obchod</h2>
+                        <ShopPanel />
+                    {:else if activePanel === 'achievements'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Úspěchy</h2>
+                        <AchievementsPanel />
+                    {:else if activePanel === 'leaderboard'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Žebříček</h2>
+                        <LeaderboardPanel />
+                    {:else if activePanel === 'story'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Příběh</h2>
+                        <StoryPanel />
+                    {:else if activePanel === 'timeMode'}
+                        <h2 class="mb-4 text-xl font-bold text-white">Časový režim</h2>
+                        <TimeModePanel />
+                    {/if}
+                </div>
+            </div>
+        {/if}
+    </div>
 
 			<!-- Hlavní herní plocha -->
 			<div class="flex-1 p-4">
@@ -301,11 +323,11 @@
 								<img
 									src={getElementImage(element.type) || '/placeholder.svg'}
 									alt={element.type}
-									class="pointer-events-none h-full w-full select-none rounded-md object-contain transition-opacity"
+									class="pointer-events-none  select-none rounded-md object-contain transition-opacity w-full h-full"
 									draggable="false"
 									style="-webkit-user-drag: none;"
 								/>
-							{:else}
+							{:else} <!-- upravit po zmene funkce -->
 								<div
 									class="flex h-full w-full select-none items-center justify-center rounded-md bg-blue-500 text-white"
 								>
