@@ -92,3 +92,26 @@ html {
 		transform: translateX(100%);
 	}
 }
+
+.task-enter {
+	opacity: 0;
+	transform: translateY(10px);
+  }
+  .task-enter-active {
+	transition: all 0.3s ease-out;
+  }
+
+  /* Animace pro menu */
+.transition-transform {
+	transition-property: transform;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+  }
+  
+  .-translate-x-full {
+	transform: translateX(-100%);
+  }
+  
+  .translate-x-0 {
+	transform: translateX(0);
+  }
