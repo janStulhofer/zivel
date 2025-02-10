@@ -18,6 +18,8 @@
   import StoryPanel from '$lib/components/StoryPanel.svelte';
   import TimeModePanel from '$lib/components/TimeModePanel.svelte';
   import StyledUsername from '$lib/components/StyledUsername.svelte';
+  import TrashCan from '$lib/components/TrashCan.svelte';
+
 	//Seznam cest k avatarum
 	const avatars = [
 		'/assets/avatars/avatar.jpg',
@@ -304,7 +306,8 @@ function closePanel() {
     </div>
 
 			<!-- Hlavní herní plocha -->
-			<div class="flex-1 p-4">
+			<div class="flex-1 p-4 relative">
+				<TrashCan />
 				<div
 					class="bg-black/10 backdrop-blur-sm relative h-full w-full rounded-xl p-6"
 					on:drop={handleDrop}
