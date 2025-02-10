@@ -4,6 +4,8 @@ import { seznamPrvku } from './seznamPrvku';
 import { supabase } from './supabaseClient';
 import { unlockedElements } from './stores/odemcenePrvky';
 import { xpStore } from './stores/xpCount';
+import { trashStore } from './stores/trashStore';
+import { get } from 'svelte/store';
 
 interface GameElement {
   id: number;
@@ -68,6 +70,23 @@ function checkCollision(element1: GameElement, element2: GameElement): boolean {
   );
 }
 
+function checkTrashCollision(element: GameElement, trash: TrashZone): boolean {
+  const gameArea = document.querySelector('[aria-label="Herní plocha pro kombinování prvků"]');
+  if (!gameArea) return false;
+  const gameRect = gameArea.getBoundingClientRect();
+  
+  // Přepočet pozice elementu na screen coordinates
+  const elementScreenX = gameRect.left + element.x + element.width/2;
+  const elementScreenY = gameRect.top + element.y + element.height/2;
+  
+  const distance = Math.sqrt(
+    Math.pow(elementScreenX - trash.x, 2) + 
+    Math.pow(elementScreenY - trash.y, 2)
+  );
+  
+  return distance < trash.radius;
+}
+
 //Generování klíče podle kterého se bude následně porcházet pole kombinací
 function generateKey(type1: string, type2: string): string {
   return [type1, type2].sort().join('_');
@@ -106,7 +125,8 @@ export function dragElement(node: HTMLElement) {
     if (elementId) {
       const dx = event.clientX - dragX;
       const dy = event.clientY - dragY;
-
+  
+      // Aktualizace pozice prvku
       elements.update(els => {
         const elementIndex = els.findIndex(e => e.id === parseInt(elementId));
         if (elementIndex !== -1) {
@@ -117,6 +137,7 @@ export function dragElement(node: HTMLElement) {
       });
     }
   }
+  
 
   function handleMouseup() {
     const elementId = node.getAttribute('data-id');
@@ -124,8 +145,17 @@ export function dragElement(node: HTMLElement) {
       elements.update(els => {
         const movedElement = els.find(e => e.id === parseInt(elementId));
         if (movedElement) {
+          const trash = get(trashStore);
+          if (trash && checkTrashCollision(movedElement, trash)) {
+            node.classList.add('deleting');
+            setTimeout(() => {
+              elements.update(current => current.filter(e => e.id !== movedElement.id));
+            }, 300);
+            return els;
+          }
           els.forEach(target => {
             if (target.id !== movedElement.id && checkCollision(movedElement, target)) {
+              
               const combination = getCombination(movedElement.type, target.type);
               if (combination) {
                 const newElement: GameElement = {
