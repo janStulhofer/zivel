@@ -9,7 +9,7 @@
   interface Chapter {
     title: string;
     pages: StoryPage[];
-    isUnlocked: boolean; //Brát informace z db
+    isUnlocked: boolean;
     unlockCondition: string;
   }
 
@@ -17,20 +17,20 @@
     {
       title: "Úvod",
       pages: [
-        { content: "Hledali jste praci a nasli jste ji." },
-        { content: "Stal ses pomocnikem vedce..." }
+        { content: "Hledali jste praci a našli jste ji." },
+        { content: "Stal jsi se pomocníkem vědce..." }
       ],
       isUnlocked: true,
       unlockCondition: "Začátek je vždy odemčený"
     },
     {
-      title: "Prvni kroky",
+      title: "První kroky",
       pages: [
-        { content: "Jo uz tady nechci pracovat" },
-        { content: "Bro si mysli ze se mi tady libi" }
+        { content: "Jen co jsi viděl vědce, tak se tebou prohnal strach." },
+        { content: "Byl starý a zarostlý." }
       ],
       isUnlocked: true,
-      unlockCondition: "Vytvořte prvek x"
+      unlockCondition: "Vytvořte prvek páry"
     },
     {
       title: "y",
