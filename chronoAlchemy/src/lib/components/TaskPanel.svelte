@@ -68,7 +68,7 @@
 	}
   </script>
   
-  <div class="space-y-4 p-4">
+  <div class="space-y-4 p-4 z-11">
 	<!-- Aktuální úkoly -->
 	<h2 class="mb-4 text-2xl font-bold text-white">Aktuální úkoly</h2>
   

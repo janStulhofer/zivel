@@ -20,10 +20,10 @@
 });
   </script>
   
-  <div class="absolute left-4 bottom-4 z-50" bind:this={trashZone}>
+  <div class="absolute left-4 bottom-4 z-10" bind:this={trashZone}>
     <img
       src="/assets/gui/trash-can.png"
       alt="Koš"
-      class="w-12 h-12 transition-all duration-200 hover:scale-110"
+      class="w-20 h-20 transition-all duration-200 hover:scale-110"
     />
   </div>
