@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { ChevronLeft, ChevronRight, Lock, Unlock } from 'lucide-svelte';
 
+  export let username: string;
+
   interface StoryPage {
     content: string;
   }
