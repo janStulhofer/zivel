@@ -133,14 +133,17 @@ function checkTrashCollision(element: GameElement, trash: TrashZone): boolean {
  vrací klíč ve formátu "typ1_typ2" (seřazeno abecedně)
  */
 function generateKey(type1: string, type2: string): string {
-	return [type1, type2].sort().join('_');
+	return [type1, type2].sort().join('_');							//VYMYSLET POPŘEMÝŠLET
 }
 
 // Hledá výslednou kombinaci
 function getCombination(type1: string, type2: string): string | null {
-	const key = generateKey(type1, type2);
-	return seznamKombinaci.get(key) || null;
-}
+	const key1 = generateKey(type1, type2); // Abecedně seřazený klíč
+	const key2 = [type1, type2].join('_');  // Původní pořadí
+  
+	// Zkusíme obě varianty
+	return seznamKombinaci.get(key1) || seznamKombinaci.get(key2) || null;
+  }
 
 // DRAG & DROP SYSTEM
 // ==================
@@ -222,6 +225,7 @@ export function dragElement(node: HTMLElement) {
 						if (target.id !== movedElement.id && checkCollision(movedElement, target)) {
 							// Pokus o kombinaci elementů
 							const combination = getCombination(movedElement.type, target.type);
+							
 							if (combination) {
 								// Vytvoření nového elementu z kombinace
 								const newElement: GameElement = {
