@@ -1,49 +1,87 @@
-<script lang="ts"> //Dopsat popis funkci etc...
-	  import {tokenStore} from '$lib/stores/tokenCount';
+<script lang="ts">
+    import { supabase } from '$lib/supabaseClient';
+    import { tokenStore } from '$lib/stores/tokenCount';
+    import { onMount } from 'svelte';
 
-    //Testovaci lvly
-    const levelRequirements = [
-        100,    
-        250,    
-        500,    
-        1000,   
-        2000,   
-    ];
+    const levelRequirements = [100, 250, 500, 1000, 2000];      //DOUPRAVIT LVLY
+    export let xp = 0;
 
-    export let xp = 0;  //Inicializacni hodnota pak z db
-    
+    let dataLoaded = false;
+    let lastProcessedLevel = 0;
+    let currentLevel = 0;
+    let maxXP = 0;
+
     function calculateLevel(currentXP: number) {
-        let currentLevel = 0;
-        
-        for (let i = 0; i < levelRequirements.length; i++) {
-            if (currentXP >= levelRequirements[i]) {
-                currentLevel = i + 1;
-            } else {
-                break;
-            }
+        let level = 0;
+        for (const requirement of levelRequirements) {
+            if (currentXP >= requirement) level++;
+            else break;
         }
-        
-        return currentLevel;
+        return level;
     }
 
     function getMaxXPForCurrentLevel(currentXP: number) {
         const level = calculateLevel(currentXP);
-        return levelRequirements[level] || levelRequirements[levelRequirements.length - 1];
+        return levelRequirements[level] || levelRequirements.at(-1);
     }
 
-    $: maxXP = getMaxXPForCurrentLevel(xp);
-    $: currentLevel = calculateLevel(xp);
+    $: {
+        currentLevel = calculateLevel(xp);
+        maxXP = getMaxXPForCurrentLevel(xp);
+    }
 
-	let prevLvl = 0;
-	$: if(currentLevel > prevLvl)
-	{
-		const tokensToAdd = (currentLevel - prevLvl) * 10; //10tokenu za kazdy novy lvl
-		tokenStore.update(tokens => tokens + tokensToAdd);
-		prevLvl = currentLevel;
-	}
+    $: if (dataLoaded) {
+        checkLevelUp();
+    }
 
-    $: progress = Math.min((xp / maxXP) * 100, 100);  //'$' znamená, že se jedná o reaktivní deklaraci => automaticky se prepocitava kdyz se zmeni xp nebo maxXP..
+    async function checkLevelUp() {
+        if (currentLevel > lastProcessedLevel) {
+            const delta = currentLevel - lastProcessedLevel;
+            await updateTokensInDatabase(delta * 10);
+            lastProcessedLevel = currentLevel; // Okamžitá lokální aktualizace
+        }
+    }
 
+    onMount(async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data } = await supabase
+                .from('user_profiles')
+                .select('last_processed_level')
+                .eq('id', user.id)
+                .single();
+
+            // 4. Správná inicializace stavu
+            lastProcessedLevel = data?.last_processed_level ?? calculateLevel(xp);
+            dataLoaded = true;
+        } catch (error) {
+            console.error('Chyba:', error);
+            dataLoaded = true;
+        }
+    });
+
+    async function updateTokensInDatabase(tokensToAdd: number) {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { error } = await supabase.rpc('increment_token', {
+                user_id: user.id,
+                tokens: tokensToAdd,
+                new_level: currentLevel
+            });
+
+            if (!error) {
+                tokenStore.update(tokens => tokens + tokensToAdd);
+            }
+        } catch (error) {
+            console.error('Chyba:', error);
+        }
+    }
+
+    $: progress = Math.min((xp / maxXP) * 100, 100);
 </script>
 
 <div class="relative h-8 w-full overflow-hidden rounded-full bg-gray-200">
@@ -57,4 +95,3 @@
         Level {currentLevel}: {xp}/{maxXP} XP
     </div>
 </div>
-
