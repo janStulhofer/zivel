@@ -12,13 +12,14 @@
 	import { tokenStore } from '$lib/stores/tokenCount';
 	import ElementPanel from '$lib/components/ElementPanel.svelte';
 	import TaskPanel from '$lib/components/TaskPanel.svelte';
-  import ShopPanel from '$lib/components/ShopPanel.svelte';
-  import AchievementsPanel from '$lib/components/AchievementsPanel.svelte';
-  import LeaderboardPanel from '$lib/components/LeaderboardPanel.svelte';
-  import StoryPanel from '$lib/components/StoryPanel.svelte';
-  import TimeModePanel from '$lib/components/TimeModePanel.svelte';
-  import StyledUsername from '$lib/components/StyledUsername.svelte';
-  import TrashCan from '$lib/components/TrashCan.svelte';
+	import ShopPanel from '$lib/components/ShopPanel.svelte';
+	import AchievementsPanel from '$lib/components/AchievementsPanel.svelte';
+	import LeaderboardPanel from '$lib/components/LeaderboardPanel.svelte';
+	import StoryPanel from '$lib/components/StoryPanel.svelte';
+	import TimeModePanel from '$lib/components/TimeModePanel.svelte';
+	import StyledUsername from '$lib/components/StyledUsername.svelte';
+	import TrashCan from '$lib/components/TrashCan.svelte';
+	import { writable } from 'svelte/store';
 
 	//Seznam cest k avatarum
 	const avatars = [
@@ -32,7 +33,7 @@
 		'/assets/avatars/avatar8.jpg'
 	];
 
-	let username = '';
+	export let username = '';
 	let loading = true;
 	let tutorialCompleted = false;
 	let currentAvatarId = 0;
@@ -40,23 +41,25 @@
 	let dataLoaded = false;
 	let isMenuOpen = false;
 	let userId: string = '';
-  	let activePanel = null;
+	let activePanel = null;
 
-function openPanel(panel) {
-    activePanel = panel;
-}
+	function openPanel(panel) {
+		activePanel = panel;
+	}
 
-function closePanel() {
-    activePanel = null;
-}
+	function closePanel() {
+		activePanel = null;
+	}
 
 	let prvkyPocet = 8;
 
 	$: gameElements = $elements;
 
-	const default_elements = ['water', 'air', 'fire', 'earth'];
+	const default_elements = ['Voda', 'Vzduch', 'Oheň', 'Země'];
 
+	// onMount se spouští po prvním renderování komponenty
 	onMount(async () => {
+		// Získání informací o aktuálně přihlášeném uživateli ze Supabase auth
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
@@ -167,9 +170,8 @@ function closePanel() {
 		}
 	}
 
-  function getElementImage(elementName) {
-    return `/assets/prvky/${elementName.toLowerCase()}.png`;
-}
+	function getElementImage(elementName) {
+		return `/assets/prvky/${elementName.charAt(0).toUpperCase() + elementName.slice(1).toLowerCase()}.png`;	}
 
 	function toggleMenu() {
 		isMenuOpen = !isMenuOpen;
@@ -178,17 +180,17 @@ function closePanel() {
 
 <Particles />
 
+
 {#if loading}
-	<div class="flex h-screen items-center justify-center">
-		<p class="text-2xl font-bold text-white">Načítání...</p>
-		<img src="/assets/loading2.gif" alt="nacitani" />
-	</div>
+    <div class="flex h-screen items-center justify-center" transition:fade>
+        <img src="/assets/loading2.gif" alt="Načítání" class="w-20" />
+    </div>
 {:else if dataLoaded}
 	<!-- Hlavní container -->
 	<div class="flex h-screen w-screen flex-col overflow-hidden">
 		<!-- Horní menu -->
 		<div
-			class="backdrop-blur-sm flex h-16 w-full items-center justify-between bg-black/[0.01] px-4"
+			class="flex h-16 w-full items-center justify-between bg-black/[0.01] px-4 backdrop-blur-sm"
 		>
 			<!-- Logo vlevo -->
 			<img src="/assets/logoZivel-White.png" alt="Logo" class="h-12 object-contain" />
@@ -200,12 +202,12 @@ function closePanel() {
 
 			<!-- Profil vpravo -->
 			<div class="flex items-center space-x-4">
-				<span class="border mr-6 flex rounded-lg p-1 text-white"
+				<span class="mr-6 flex rounded-lg border p-1 text-white"
 					><img src="/assets/gui/token.png" class="w-7 pr-2" />{$tokenStore}</span
 				>
-				
+
 				<StyledUsername {username} {userId} />
-								<img
+				<img
 					src={`/assets/avatars/avatar${currentAvatarId + 1}.jpg`}
 					alt="User avatar"
 					class="h-10 w-10 rounded-full object-cover"
@@ -216,100 +218,78 @@ function closePanel() {
 		<!-- HERNÍ PROSTOR -->
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Levý prostor -->
-			<div class="border-r w-32 border-gray-700">
-        <button
-            on:click={() => openPanel('tasks')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít úkoly"
-        >
-            <img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14" />
-        </button>
-    
-        <button
-            on:click={() => openPanel('shop')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít obchod"
-        >
-            <img src="/assets/gui/shopping-cart.png" alt="Obchod" class="w-14" />
-        </button>
-    
-        <button
-            on:click={() => openPanel('achievements')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít úspěchy"
-        >
-            <img src="/assets/gui/achievement.png" alt="Úspěchy" class="w-14" />
-        </button>
-    
-        <button
-            on:click={() => openPanel('leaderboard')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít žebříček"
-        >
-            <img src="/assets/gui/podium.png" alt="Žebříček" class="w-14" />
-        </button>
-    
-        <button
-            on:click={() => openPanel('story')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít příběh"
-        >
-            <img src="/assets/gui/book-cover.png" alt="Příběh" class="w-14" />
-        </button>
-    
-        <button
-            on:click={() => openPanel('timeMode')}
-            class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-            aria-label="Otevřít časový režim"
-        >
-            <img src="/assets/gui/stopwatch.png" alt="Časový režim" class="w-14" />
-        </button>
-    
-        <!-- Rolovací menu -->
-        {#if activePanel !== null}
-            <div
-                class="left-1 bg-gray-800/90 backdrop-blur-sm border-r w-100 scrollbar-hide fixed top-0 z-10 h-screen overflow-y-auto border-gray-700 transition-transform duration-300 ease-in-out"
-                class:translate-x-0={activePanel !== null}
-                class:-translate-x-full={activePanel === null}
-            >
-                <div class="p-4">
-                    <button
-                        on:click={closePanel}
-                        class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
-                        aria-label="Zavřít panel"
-                    >
-                        <img src="/assets/gui/cancel.png" alt="Vrátit" class="w-14" />
-                    </button>
-    
-                    {#if activePanel === 'tasks'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Úkoly</h2>
-                        <TaskPanel />
-                    {:else if activePanel === 'shop'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Obchod</h2>
-                        <ShopPanel />
-                    {:else if activePanel === 'achievements'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Úspěchy</h2>
-                        <AchievementsPanel />
-                    {:else if activePanel === 'leaderboard'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Žebříček</h2>
-                        <LeaderboardPanel />
-                    {:else if activePanel === 'story'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Příběh</h2>
-                        <StoryPanel />
-                    {:else if activePanel === 'timeMode'}
-                        <h2 class="mb-4 text-xl font-bold text-white">Časový režim</h2>
-                        <TimeModePanel />
-                    {/if}
-                </div>
-            </div>
-        {/if}
-    </div>
+			<div class="w-32 border-r border-gray-700">
+				<button
+					on:click={() => openPanel('tasks')}
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+					aria-label="Otevřít úkoly"
+				>
+					<img src="/assets/gui/tied-scroll.png" alt="Úkoly" class="w-14" />
+				</button>
+
+				<button
+					on:click={() => openPanel('shop')}
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+					aria-label="Otevřít obchod"
+				>
+					<img src="/assets/gui/shopping-cart.png" alt="Obchod" class="w-14" />
+				</button>
+
+				<button
+					on:click={() => openPanel('leaderboard')}
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+					aria-label="Otevřít žebříček"
+				>
+					<img src="/assets/gui/podium.png" alt="Žebříček" class="w-14" />
+				</button>
+
+				<button
+					on:click={() => openPanel('story')}
+					class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+					aria-label="Otevřít příběh"
+				>
+					<img src="/assets/gui/book-cover.png" alt="Příběh" class="w-14" />
+				</button>
+
+				<!-- Rolovací menu -->
+				{#if activePanel !== null}
+					<div
+						class="w-100 scrollbar-hide fixed left-1 top-0 z-10 h-screen overflow-y-auto border-r border-gray-700 bg-gray-800/90 backdrop-blur-sm transition-transform duration-300 ease-in-out z-51"
+						class:translate-x-0={activePanel !== null}
+						class:-translate-x-full={activePanel === null}
+					>
+						<div class="p-4">
+							<button
+								on:click={closePanel}
+								class="flex w-full items-center justify-center p-4 transition-colors hover:bg-gray-700/50"
+								aria-label="Zavřít panel"
+							>
+								<img src="/assets/gui/cancel.png" alt="Vrátit" class="w-14" />
+							</button>
+
+							{#if activePanel === 'tasks'}
+								<h2 class="mb-4 text-xl font-bold text-white z-11">Úkoly</h2>
+								<TaskPanel />
+							{:else if activePanel === 'shop'}
+								<h2 class="mb-4 text-xl font-bold text-white">Obchod</h2>
+								<ShopPanel />
+							{:else if activePanel === 'leaderboard'}
+								<h2 class="mb-4 text-xl font-bold text-white">Žebříček</h2>
+								<LeaderboardPanel />
+							{:else if activePanel === 'story'}
+								<h2 class="mb-4 text-xl font-bold text-white">Příběh</h2>
+								<StoryPanel {username}/>
+							{/if}
+						</div>
+					</div>
+				{/if}
+			</div>
 
 			<!-- Hlavní herní plocha -->
-			<div class="flex-1 p-4 relative">
+			<div class="relative flex-1 p-4">
 				<TrashCan />
 				<div
-					class="bg-black/10 backdrop-blur-sm relative h-full w-full rounded-xl p-6"
+					class="relative h-full w-full rounded-xl bg-black/10 p-6 backdrop-blur-sm"
 					on:drop={handleDrop}
 					on:dragover={handleDragOver}
 					role="region"
@@ -317,7 +297,7 @@ function closePanel() {
 				>
 					{#each gameElements as element (element.id)}
 						<div
-							class="cursor-grab active:cursor-grabbing absolute select-none [&:active>img]:opacity-50"
+							class="absolute cursor-grab select-none active:cursor-grabbing [&:active>img]:opacity-50"
 							style="left: {element.x}px; top: {element.y}px; width: {element.width}px; height: {element.height}px;"
 							data-id={element.id}
 							use:dragElement
@@ -326,11 +306,12 @@ function closePanel() {
 								<img
 									src={getElementImage(element.type) || '/placeholder.svg'}
 									alt={element.type}
-									class="pointer-events-none  select-none rounded-md object-contain transition-opacity w-full h-full"
+									class="pointer-events-none h-full w-full select-none rounded-md object-contain transition-opacity"
 									draggable="false"
 									style="-webkit-user-drag: none;"
 								/>
-							{:else} <!-- upravit po zmene funkce -->
+							{:else}
+								<!-- upravit po zmene funkce -->
 								<div
 									class="flex h-full w-full select-none items-center justify-center rounded-md bg-blue-500 text-white"
 								>
@@ -340,7 +321,6 @@ function closePanel() {
 						</div>
 					{/each}
 				</div>
-				
 			</div>
 
 			<!-- Pravý panel s prvky -->
@@ -353,14 +333,14 @@ function closePanel() {
 
 {#if showAvatarSelection && dataLoaded}
 	<div class="fixed inset-0 flex items-center justify-center bg-black/50">
-		<div class="bg-black/80 backdrop-blur-md w-full max-w-2xl rounded-xl p-8">
+		<div class="w-full max-w-2xl rounded-xl bg-black/80 p-8 backdrop-blur-md">
 			<p class="mb-8 text-center text-xl text-white">
 				Začneme krátkým úvodem do hry, teď si vyberte svůj avatar!
 			</p>
 			<div class="grid grid-cols-4 grid-rows-2 gap-4">
 				{#each avatars as avatar, i}
 					<div
-						class="aspect-square hover:ring-2 hover:ring-white cursor-pointer overflow-hidden rounded-lg transition-all {currentAvatarId ===
+						class="aspect-square cursor-pointer overflow-hidden rounded-lg transition-all hover:ring-2 hover:ring-white {currentAvatarId ===
 						i
 							? 'ring-4 ring-slate-600'
 							: ''}"
@@ -370,8 +350,8 @@ function closePanel() {
 						tabindex="0"
 					>
 						<img
-							src={`/assets/avatars/avatar${i + 1}.jpg`}
-							alt="Avatar option {i + 1}"
+							src={`/assets/avatars/avatar${i+1}.jpg`}
+							alt="Avatar option {i+1}"
 							class="h-full w-full object-cover"
 						/>
 					</div>
