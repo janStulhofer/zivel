@@ -38,7 +38,7 @@
         if (currentLevel > lastProcessedLevel) {
             const delta = currentLevel - lastProcessedLevel;
             await updateTokensInDatabase(delta * 10);
-            lastProcessedLevel = currentLevel; // Okamžitá lokální aktualizace
+            lastProcessedLevel = currentLevel; 
         }
     }
 
@@ -53,7 +53,6 @@
                 .eq('id', user.id)
                 .single();
 
-            // 4. Správná inicializace stavu
             lastProcessedLevel = data?.last_processed_level ?? calculateLevel(xp);
             dataLoaded = true;
         } catch (error) {
