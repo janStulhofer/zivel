@@ -1,0 +1,128 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@font-face {
+	font-family: 'Rubik';
+	src: url('/fonts/Rubik-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'PTSerif';
+	src: url(/chronoAlchemy/static/fonts/PTSerif-Bold.ttf) format('truetype');
+	font-weight: 700;
+	font-style: bold;
+}
+
+@font-face {
+	font-family: 'PTSerif';
+	src: url(/chronoAlchemy/static/fonts/PTSerif-Italic.ttf) format('truetype');
+	font-weight: 400;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'PTSerif';
+	src: url(/chronoAlchemy/static/fonts/PTSerif-BoldItalic.ttf) format('truetype');
+	font-weight: 700;
+	font-style: boldItalic;
+}
+
+* {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+/*Slide doprava*/
+.slide-right::view-transition-old(root) {
+	animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-out-left;
+}
+
+.slide-right::view-transition-new(root) {
+	animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-in-right;
+}
+
+@keyframes slide-in-right {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes slide-out-left {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-100%);
+	}
+}
+
+/*Slide doleva*/
+.slide-left::view-transition-old(root) {
+	animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-out-left2;
+}
+
+.slide-left::view-transition-new(root) {
+	animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-in-right2;
+}
+
+@keyframes slide-in-right2 {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes slide-out-left2 {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}
+
+.task-enter {
+	opacity: 0;
+	transform: translateY(10px);
+  }
+  .task-enter-active {
+	transition: all 0.3s ease-out;
+  }
+
+  /* Animace pro menu */
+.transition-transform {
+	transition-property: transform;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+  }
+  
+  .-translate-x-full {
+	transform: translateX(-100%);
+  }
+  
+  .translate-x-0 {
+	transform: translateX(0);
+  }
+
+  .deleting {
+	transition: all 0.3s ease-out;
+	opacity: 0;
+	transform: scale(0) rotate(45deg);
+  }
+  
+  @keyframes trash-delete {
+	0% { opacity: 1; transform: scale(1); }
+	100% { opacity: 0; transform: scale(0) rotate(180deg); }
+  }
