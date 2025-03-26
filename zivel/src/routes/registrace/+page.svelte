@@ -54,7 +54,6 @@
 		if (signUpError) throw signUpError;
   
 		if (data?.user) {
-		  alert('Registrace úspěšná! Prosím, zkontrolujte svůj email pro potvrzení účtu.');
 		  goto('/login');
 		} else {
 		  throw new Error('Neočekávaná chyba při registraci.');
@@ -85,7 +84,7 @@
 			id="username"
 			bind:value={username}
 			required
-			class="bg-white bg-opacity-40 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
+			class="bg-white bg-opacity-65 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
 		  />
 		</div>
 		<div>
@@ -95,7 +94,7 @@
 			id="email"
 			bind:value={email}
 			required
-			class="bg-white bg-opacity-40 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
+			class="bg-white bg-opacity-65 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
 		  />
 		</div>
 		<div>
@@ -105,7 +104,7 @@
 			id="password"
 			bind:value={password}
 			required
-			class="bg-white bg-opacity-40 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
+			class="bg-white bg-opacity-65 border rounded-lg shadow-md p-2 focus:outline-none focus:ring-2 focus:ring-primary w-full text-gray-800"
 		  />
 		</div>
 		<button

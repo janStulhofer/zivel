@@ -13,10 +13,8 @@
 	import ElementPanel from '$lib/components/ElementPanel.svelte';
 	import TaskPanel from '$lib/components/TaskPanel.svelte';
 	import ShopPanel from '$lib/components/ShopPanel.svelte';
-	import AchievementsPanel from '$lib/components/AchievementsPanel.svelte';
 	import LeaderboardPanel from '$lib/components/LeaderboardPanel.svelte';
 	import StoryPanel from '$lib/components/StoryPanel.svelte';
-	import TimeModePanel from '$lib/components/TimeModePanel.svelte';
 	import StyledUsername from '$lib/components/StyledUsername.svelte';
 	import TrashCan from '$lib/components/TrashCan.svelte';
 	import { writable } from 'svelte/store';
@@ -254,7 +252,7 @@
 				<!-- Rolovací menu -->
 				{#if activePanel !== null}
 					<div
-						class="w-100 scrollbar-hide fixed left-1 top-0 z-10 h-screen overflow-y-auto border-r border-gray-700 bg-gray-800/90 backdrop-blur-sm transition-transform duration-300 ease-in-out z-51"
+						class="w-100 scrollbar-hide fixed left-1 top-0 h-screen overflow-y-auto border-r border-gray-700 bg-gray-800/90 backdrop-blur-sm transition-transform duration-300 ease-in-out z-20"
 						class:translate-x-0={activePanel !== null}
 						class:-translate-x-full={activePanel === null}
 					>
@@ -268,7 +266,7 @@
 							</button>
 
 							{#if activePanel === 'tasks'}
-								<h2 class="mb-4 text-xl font-bold text-white z-11">Úkoly</h2>
+								<h2 class="mb-4 text-xl font-bold text-white">Úkoly</h2>
 								<TaskPanel />
 							{:else if activePanel === 'shop'}
 								<h2 class="mb-4 text-xl font-bold text-white">Obchod</h2>

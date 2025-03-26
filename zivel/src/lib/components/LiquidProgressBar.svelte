@@ -3,7 +3,48 @@
     import { tokenStore } from '$lib/stores/tokenCount';
     import { onMount } from 'svelte';
 
-    const levelRequirements = [100, 250, 500, 1000, 2000];      //DOUPRAVIT LVLY
+    const levelRequirements = [
+    200,         
+    450,     
+    750,     
+    1100,    
+    1500,    
+    1950,    
+    2450,    
+    3000,    
+    3600,    
+    4250,    
+    4950,    
+    5700,    
+    6500,    
+    7350,    
+    8250,    
+    9200,    
+    10200,   
+    11250,   
+    12350,   
+    13500,   
+    14700,   
+    15950,   
+    17250,   
+    18600,   
+    20000,   
+    21450,   
+    22950,   
+    24500,   
+    26100,   
+    27750,   
+    29450,   
+    31200,   
+    33000,   
+    34850,   
+    36750,   
+    38700,   
+    40700,   
+    42750,   
+    44850,   
+    47000,   
+    ];
     export let xp = 0;
 
     let dataLoaded = false;
