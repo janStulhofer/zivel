@@ -262,7 +262,7 @@ export const TASKS = [
     id: 38,
     title: "Letní terorista",
     description: "Černožlutý gatekeeper, co kontroluje, kdo smí na piknik",
-    target: "Vosa",
+    target: "Včela",
     reward: 5,
   },
   {
